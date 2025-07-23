@@ -196,7 +196,7 @@ def prompt_render(question: str, info: str, fewshot: str, table_name: str, chat_
           City,
           REGEXP_REPLACE(
             FORMAT('%.2f', total_revenue_num),
-            r'(\.*?[1-9])0+$|\.0+$',
+            r'(\.\d*?[1-9])0+$|\.0+$',
             r'\1'
           ) AS total_revenue,
           transaction_count
