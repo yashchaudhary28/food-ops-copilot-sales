@@ -5,36 +5,44 @@ from typing import Dict, Any
 
 def metadataExtractor_prompt(question: str, schema_json: str, fewshot: str, chat_history: str) -> str:
     return f"""
-You are a highly capable assistant trained to interpret natural language questions related to tabular data 
-and extract all essential components needed to generate accurate and optimized SQL queries.
+You are a highly capable assistant trained to interpret natural language questions related to restaurant sales data 
+and extract all essential components needed to generate accurate and optimized SQL queries for sales analytics.
 
 Given the following:
-- A **table schema** that includes for each column: its name, data type, description, sample values, 
+- A **sales data schema** that includes for each column: its name, data type, description, sample values, 
   whether binning is possible, and a list of common aliases.
-- A **natural language question** from the user.
+- A **natural language question** from the user about restaurant sales, payments, geographic performance, or tax analysis.
 - Optional **few-shot examples**.
 
 Your task is to analyze this input and extract the following metadata necessary to construct an effective SQL query:
 
 1. **Data And Visualisation Relevance Check**
-Determine whether the user's question is data-visualisation related  or a general conversation. Even if the question is visualisation related keep this as 1.This distinction is crucial to decide whether to generate an SQL query or respond in a conversational manner.
+Determine whether the user's question is sales data/analytics related or a general conversation. Even if the question is visualisation related keep this as 1. This distinction is crucial to decide whether to generate an SQL query or respond in a conversational manner.
 
 2. **Relevant Columns**  
-   Identify which columns from the schema are necessary to answer the question. Use both column names and aliases to detect matches.
+   Identify which columns from the sales schema are necessary to answer the question. Use both column names and aliases to detect matches.
+   Focus on: Brand, Outlet_Location, City, Payment_Type, Payment_Vendor, Sale_Date, revenue columns, tax columns.
 
 3. **Question Intent**  
-   Understand and summarize the core purpose of the question, such as computing an aggregate, filtering data, trend analysis, ranking, grouping, or comparison.
+   Understand and summarize the core purpose of the question, such as:
+   - Sales performance analysis (revenue, transactions)
+   - Payment method analysis (online vs offline, vendor performance)
+   - Geographic analysis (city/outlet performance)
+   - Tax analysis (compliance, burden analysis)
+   - Trend analysis (time-based patterns)
+   - Brand comparison and ranking
 
 4. **Date Interval**  
-   If the question involves a specific time range (e.g., "in May 2024", "last year", "from Jan to Mar"), extract this interval clearly.  
+   If the question involves a specific time range (e.g., "in May 2025", "last month", "from June to July"), extract this interval clearly.  
    If no interval is mentioned, return null.
    
 5. **Binning Logic**  
-   If the question requires grouping numeric data into ranges (e.g., “group by loan amount”, “distribution of LTV”), identify the relevant column(s) and suggest whether bins are required or not. 
+   If the question requires grouping numeric data into ranges (e.g., "group by transaction amount", "distribution of settlement total"), identify the relevant column(s) and suggest whether bins are required or not. 
    **Do Binning for only those columns which have the "binning_possible" value set to "Yes" in the table schema**
+   Common sales binning scenarios: transaction amounts, customer group sizes (Pax), discount ranges.
 
-6. **DPD Question**
-    Whenever question is related to dpd (days past due) buckets, always set the value "dpd_question" to 1
+6. **Payment Analysis Question**
+    Whenever question is related to payment method analysis, vendor comparison, or digital payment adoption, always set the value "payment_question" to 1
 
 7. **Chat History**
     Chat History will be provided to you to get the context of the question asked by the user
@@ -47,7 +55,7 @@ Determine whether the user's question is data-visualisation related  or a genera
      "date_interval": "YYYY-MM-DD to YYYY-MM-DD" or null,
      "binning_required": 0 or 1 
      "bins": ["COLUMN_NAME_1"],
-     "dpd_question": 0 or 1,
+     "payment_question": 0 or 1,
      "intent": "short description of what the question is trying to do"
    }}
 
@@ -110,9 +118,9 @@ def prompt_render(question: str, info: str, fewshot: str, table_name: str, chat_
         - The end date should be the last day of the most recent completed month, which is obtained using:
           LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
 
-        Example SQL logic:
-        DISBURSALDATE >= DATE_SUB(DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH), INTERVAL N MONTH)
-        AND DISBURSALDATE <= LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
+        Example SQL logic for sales data:
+        Sale_Date >= DATE_SUB(DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH), MONTH), INTERVAL N MONTH)
+        AND Sale_Date <= LAST_DAY(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
 
     ---
     
@@ -121,74 +129,79 @@ def prompt_render(question: str, info: str, fewshot: str, table_name: str, chat_
         - Do not infer or modify the bin edges.
         - Each value should be assigned to a bin using the given edges exactly.
         
-        When **dpd_question** = 0, follow the below logic:
+        When **payment_question** = 0, follow the below logic:
         
-        Example (given edges): [3, 23, 43, 63, 83, 103]
+        Example (given edges for transaction amounts): [100, 500, 1000, 2000, 5000]
         Binning Logic:
-          - Bin 1: 3 <= value < 23
-          - Bin 2: 23 <= value < 43
-          - Bin 3: 43 <= value < 63
-          - Bin 4: 63 <= value < 83
-          - Bin 5: 83 <= value <= 103
-          - Bin 6: 103 < value (precautionary bin for any unexpected values above the last edge)
+          - Bin 1: 100 <= value < 500 (Small transactions)
+          - Bin 2: 500 <= value < 1000 (Medium transactions)
+          - Bin 3: 1000 <= value < 2000 (Large transactions)
+          - Bin 4: 2000 <= value < 5000 (Premium transactions)
+          - Bin 5: 5000 <= value (High-value transactions)
+          - Bin 6: value < 100 (precautionary bin for any unexpected small values)
         
-        When **dpd_question** = 1, follow the below logic:
+        When **payment_question** = 1, focus on payment method analysis:
         
-        Example:
-        Binning Logic:
-            - Bin 1: value == 0 (dpd 0)
-            - Bin 2: value == 1 (dpd 1)
-            - Bin 3: value == 3 (dpd 3)
-            - Bin 4: value >= 4 (dpd 4)
-            **Here no need to precautionary bin as all values will lie in this range only**
+        Example for Payment Analysis:
+        Group by Payment_Type and Payment_Vendor for insights like:
+            - Online vs Offline payment adoption
+            - Platform-specific performance (Zomato, Swiggy, UPI providers)
+            - Digital payment trends and vendor comparison
+            **No binning needed for payment analysis, use direct grouping**
     
     ---
 
     ##Date Handling (CRITICAL)
     - Use `EXTRACT()` for date operations:
-      EXTRACT(YEAR FROM DISBURSALDATE)
-    - `DISBURSALDATE` is already a valid **DATE/TIMESTAMP**.
+      EXTRACT(YEAR FROM Sale_Date), EXTRACT(MONTH FROM Sale_Date)
+    - `Sale_Date` is already a valid **DATE** column.
     - **NEVER use** `PARSE_DATE` or other parsing functions.
     - **Avoid** date format conversions.
+    - For time-based analysis, use Sale_Date for filtering and grouping.
 
     ---
 
     ##Numeric Formatting (CRITICAL)
 
     ### A. Monetary Conversions (for numeric calculations)
-    - For columns like `DISBURSALAMOUNT`:
-      - Divide by `10000000` to convert to **crores**.
-      - Use `ROUND(..., 2)` to round to 2 decimal places.
-      - Store the rounded value **as a numeric alias** (e.g., `total_disbursement_crores_num`) **before formatting**.
+    - For sales revenue columns like `Basic_Amount`, `Net_Sale`, `Settle_Total`:
+      - Values are already in INR, no conversion needed.
+      - Use `ROUND(..., 2)` to round to 2 decimal places for display.
+      - Store the rounded value **as a numeric alias** (e.g., `total_revenue_num`) **before formatting**.
       - **Use this numeric value for sorting or any further logic.**
+    - For large amounts, optionally convert to lakhs by dividing by 100000.
 
 
     ### B. Final Output Formatting (for display only)
     - Apply the following **REGEXP_REPLACE logic only in the final SELECT**, to format the numeric value cleanly:
       REGEXP_REPLACE(
         FORMAT('%.2f', total_disbursement_crores_num),
-        r'(\.\d*?[1-9])0+$|\.0+$',
+        r'(\.*?[1-9])0+$|\.0+$',
         r'\1'
       ) AS total_disbursement_crores
     - This ensures output looks clean (e.g., 123.00 → 123, 123.40 → 123.4) but still sorts correctly using numbers.
     
-    ### Example Usage:
+    ### Example Usage for Sales Analytics:
         WITH base_data AS (
           SELECT
-            STATE,
-            ROUND(SUM(DISBURSALAMOUNT) / 10000000, 2) AS total_disbursement_crores_num
-          FROM `your_table`
-          GROUP BY STATE
+            Brand,
+            City,
+            ROUND(SUM(Settle_Total), 2) AS total_revenue_num,
+            COUNT(*) AS transaction_count
+          FROM `sales_table`
+          GROUP BY Brand, City
         )
         SELECT
-          STATE,
+          Brand,
+          City,
           REGEXP_REPLACE(
-            FORMAT('%.2f', total_disbursement_crores_num),
-            r'(\.\d*?[1-9])0+$|\.0+$',
+            FORMAT('%.2f', total_revenue_num),
+            r'(\.*?[1-9])0+$|\.0+$',
             r'\1'
-          ) AS total_disbursement_crores
+          ) AS total_revenue,
+          transaction_count
         FROM base_data
-        ORDER BY total_disbursement_crores_num DESC
+        ORDER BY total_revenue_num DESC
 
     ---
 
@@ -317,9 +330,14 @@ def reflection_prompt(question: str, failed_query: str, error_msg: str) -> str:
     return prompt
 
 def conversation_prompt_render(question: str, chat_history: str = "") -> str:
-    return f"""You are a helpful and conversational assistant designed to assist users, primarily by generating SQL queries based on their data-related questions.
+    return f"""You are a helpful and conversational assistant designed to assist users with restaurant sales data analysis, primarily by generating SQL queries for sales analytics, payment insights, geographic performance, and tax analysis.
 
-For the following user message, respond clearly and politely. If the question is not related to data, provide a thoughtful reply, but gently remind the user that your main purpose is to assist with data analysis, and it's best to ask questions in that domain.
+For the following user message, respond clearly and politely. If the question is not related to sales data or restaurant analytics, provide a thoughtful reply, but gently remind the user that your main purpose is to assist with sales data analysis, and it's best to ask questions about:
+- Sales performance and revenue analysis
+- Payment method trends and vendor performance
+- Geographic and outlet-level insights
+- Tax analysis and compliance
+- Brand comparison and market analysis
 
 Here is the conversation so far:
 {chat_history}
