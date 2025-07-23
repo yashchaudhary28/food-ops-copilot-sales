@@ -1,0 +1,32 @@
+[project]
+name = "food-ops-bot"
+version = "1.0.0"
+description = "GenAI-powered SQL copilot for BigQuery data analysis"
+authors = [
+    {name = "Food Ops Bot Team"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "chainlit",
+    "pandas",
+    "pandas-gbq",
+    "google-cloud-aiplatform",
+    "google-cloud-bigquery",
+    "google-auth",
+    "google-api-core",
+    "protobuf",
+    "requests",
+    "scikit-learn",
+    "PyYAML",
+    "google-generativeai",
+    "langchain",
+    "loguru",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = []

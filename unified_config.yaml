@@ -1,0 +1,146 @@
+# =============================================================================
+# UNIFIED CONFIGURATION FILE FOR FOOD-OPS-BOT
+# =============================================================================
+# This single file contains ALL configuration needed to deploy the copilot
+# on any GCP project and BigQuery table. Simply update the values below
+# and the entire application will be configured automatically.
+# =============================================================================
+
+# =============================================================================
+# GCP PROJECT CONFIGURATION
+# =============================================================================
+gcp:
+  # Your GCP Project ID (REQUIRED) - Set via environment variable
+  project_id: "${GOOGLE_CLOUD_PROJECT}"  # Will be populated from environment
+  
+  # GCP Region for resources
+  region: "us-central1"
+  
+  # Authentication method (choose one):
+  # Option 1: Use Application Default Credentials (recommended for local dev)
+  #           Run: gcloud auth application-default login
+  # Option 2: Provide path to service account key JSON file
+  service_account_key_path: ""  # Leave empty to use default credentials
+  
+  # Vertex AI configuration
+  vertex_ai:
+    location: "us-central1"
+    
+# =============================================================================
+# BIGQUERY CONFIGURATION
+# =============================================================================
+bigquery:
+  # Default location for BigQuery operations
+  location: "US"
+  
+  # Target table configuration (MAIN TABLE FOR THE COPILOT)
+  target_table:
+    project_id: "genai-visualization-app"  # Same as main project
+    dataset_id: "sales_data"          # Dataset for restaurant data
+    table_id: "cleaned_sales_final"         # Table name for Zomato data
+    schema_file: "sales_schema_config.json"      # Schema file for this table
+    description: "Sales dataset for analysis"
+  
+  # Export settings (for saving query results)
+  export:
+    dataset_id: "copilot_exports"          # Dataset for exported results
+    table_id: "query_results_dump_sales"         # Table for saving results
+    
+# =============================================================================
+# AI MODEL CONFIGURATION
+# =============================================================================
+models:
+  # Primary model for SQL generation
+  primary:
+    name: "gemini-2.5-pro"
+    temperature: 0.0
+    top_p: 0.0
+    top_k: 1
+    
+  # Reflection model for query validation
+  reflection:
+    name: "gemini-2.5-pro"
+    temperature: 0.0
+    top_p: 0.0
+    top_k: 1
+    
+  # Embedding model for few-shot learning
+  embedding:
+    name: "gemini-embedding-001"
+
+# =============================================================================
+# APPLICATION CONFIGURATION
+# =============================================================================
+application:
+  # Application name and description
+  name: "Food Ops Bot - Sales"
+  description: "GenAI-powered SQL copilot for data analysis on sales data"
+  
+  # File paths (relative to project root)
+  files:
+    schema_config: "sales_schema_config.json"
+    few_shot_examples: "few_shot_info.txt"
+    embedding_store: "embedding_store.csv"
+    logging_config: "logging_config.yaml"
+  
+  # Chainlit UI configuration
+  ui:
+    title: "Food Ops Bot - Sales Copilot"
+    description: "Ask questions about your data in natural language"
+    show_sql_toggle: true
+    show_metadata_toggle: true
+    max_display_rows: 100
+    
+  # Processing configuration
+  processing:
+    enable_reflection: true
+    enable_few_shot: true
+    enable_chat_history: true
+    max_history_length: 10
+    
+# =============================================================================
+# DEPLOYMENT CONFIGURATION
+# =============================================================================
+deployment:
+  # Environment (development, staging, production)
+  environment: "development"
+  
+  # Port for local development
+  port: 8000
+  
+  # Cloud Run configuration (for production deployment)
+  cloud_run:
+    service_name: "food-ops-bot-sales"
+    region: "us-central1"
+    memory: "2Gi"
+    cpu: "1"
+    max_instances: 10
+    
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  enable_cloud_logging: false  # Set to true for production
+  
+# =============================================================================
+# SECURITY CONFIGURATION
+# =============================================================================
+security:
+  # Enable authentication (set to true for production)
+  enable_auth: false
+  
+  # Allowed domains for CORS (for web deployment)
+  allowed_origins:
+    - "http://localhost:8000"
+    - "https://your-domain.com"
+    
+# =============================================================================
+# FEATURE FLAGS
+# =============================================================================
+features:
+  enable_batch_processing: true
+  enable_export_to_bigquery: true
+  enable_query_caching: false
+  enable_usage_analytics: false

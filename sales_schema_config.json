@@ -1,0 +1,158 @@
+{
+  "table_name": "sales_data.cleaned_sales_final",
+  "description": "Final LLM/SQL optimized sales data for Food-Ops-Copilot",
+  "columns": [
+    {
+      "name": "Brand",
+      "type": "STRING",
+      "description": "Restaurant brand name (cleaned and standardized)"
+    },
+    {
+      "name": "Outlet_Location", 
+      "type": "STRING",
+      "description": "Specific outlet location within the brand"
+    },
+    {
+      "name": "City",
+      "type": "STRING", 
+      "description": "City where the outlet is located"
+    },
+    {
+      "name": "Full_Brand_Location",
+      "type": "STRING",
+      "description": "Complete original location string for LLM context"
+    },
+    {
+      "name": "Sale_Date",
+      "type": "DATE",
+      "description": "Transaction date in YYYY-MM-DD format"
+    },
+    {
+      "name": "Bill_No",
+      "type": "STRING", 
+      "description": "Unique bill/invoice number for transaction tracking"
+    },
+    {
+      "name": "Channel_Type",
+      "type": "STRING",
+      "description": "Sales channel type (dine_in, take_away, online_order)"
+    },
+    {
+      "name": "Pax",
+      "type": "INTEGER",
+      "description": "Number of customers/people served in the transaction"
+    },
+    {
+      "name": "Basic_Amount",
+      "type": "FLOAT",
+      "description": "Base transaction amount before taxes and discounts (INR)"
+    },
+    {
+      "name": "Discount",
+      "type": "FLOAT", 
+      "description": "Total discount amount applied to the transaction (INR)"
+    },
+    {
+      "name": "Net_Sale",
+      "type": "FLOAT",
+      "description": "Net sale amount after discounts but before taxes (INR)"
+    },
+    {
+      "name": "Settle_Total",
+      "type": "FLOAT",
+      "description": "Final settlement amount including all taxes and charges (INR)"
+    },
+    {
+      "name": "Payment_Type",
+      "type": "STRING",
+      "description": "Categorized payment method (Online, UPI, Cash, Card, Full Discount, Digital)"
+    },
+    {
+      "name": "Payment_Vendor",
+      "type": "STRING",
+      "description": "Specific payment vendor or platform (zomato, swiggy, paytm, etc.)"
+    },
+    {
+      "name": "Cash",
+      "type": "FLOAT",
+      "description": "Cash payment amount (INR)"
+    },
+    {
+      "name": "Card", 
+      "type": "FLOAT",
+      "description": "Card payment amount excluding Amex (INR)"
+    },
+    {
+      "name": "Amex",
+      "type": "FLOAT",
+      "description": "American Express card payment amount (INR)"
+    },
+    {
+      "name": "Other",
+      "type": "FLOAT",
+      "description": "Other payment methods amount (INR)"
+    },
+    {
+      "name": "CESS_2_Percent",
+      "type": "FLOAT",
+      "description": "CESS tax at 2% rate (INR)"
+    },
+    {
+      "name": "CGST_2_5_Percent",
+      "type": "FLOAT", 
+      "description": "Central Goods and Services Tax at 2.5% rate (INR)"
+    },
+    {
+      "name": "SGST_2_5_Percent",
+      "type": "FLOAT",
+      "description": "State Goods and Services Tax at 2.5% rate (INR)"
+    },
+    {
+      "name": "Staff_Welfare_Fund_5_Percent",
+      "type": "FLOAT",
+      "description": "Staff welfare fund contribution at 5% rate (INR)"
+    },
+    {
+      "name": "Staff_Welfare_Fund_10_Percent",
+      "type": "FLOAT",
+      "description": "Staff welfare fund contribution at 10% rate (INR)"
+    },
+    {
+      "name": "VAT_6_Percent",
+      "type": "FLOAT",
+      "description": "Value Added Tax at 6% rate (INR)"
+    },
+    {
+      "name": "VAT_12_5_Percent",
+      "type": "FLOAT",
+      "description": "Value Added Tax at 12.5% rate (INR)"
+    },
+    {
+      "name": "VAT_18_9_Percent",
+      "type": "FLOAT",
+      "description": "Value Added Tax at 18.9% rate (INR)"
+    },
+    {
+      "name": "VAT_25_Percent",
+      "type": "FLOAT",
+      "description": "Value Added Tax at 25% rate (INR)"
+    },
+    {
+      "name": "Packing_Charge",
+      "type": "FLOAT",
+      "description": "Additional packing/packaging charges (INR)"
+    },
+    {
+      "name": "Round_Off",
+      "type": "FLOAT",
+      "description": "Rounding adjustment amount, positive or negative (INR)"
+    }
+  ],
+  "business_context": {
+    "total_records": 59986,
+    "date_range": "2025-05-01 to 2025-07-20",
+    "brands": ["dhaba_estd_1986", "mamagoto", "tbh_by_slygranny", "outpost"],
+    "cities": 25,
+    "payment_types": ["Online", "UPI", "Cash", "Card", "Full Discount", "Digital"]
+  }
+}

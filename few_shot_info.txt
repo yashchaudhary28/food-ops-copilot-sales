@@ -1,0 +1,60 @@
+<examples>
+<example>
+<question>Are there localities in Ahmedabad like Bodakdev or SG Highway where many restaurants have high ratings but don’t offer online delivery? Can we tap that gap for delivery-only kitchens?</question>
+<response>
+{
+  "data_related": 1,
+  "relevant_columns": ["Locality", "City", "Aggregate_rating", "Has_Online_delivery"],
+  "date_interval": null,
+  "binning_required": 0,
+  "bins": [],
+  "dpd_question": 0,
+  "intent": "identify Ahmedabad localities (e.g., Bodakdev, SG Highway) with a concentration of high-rated restaurants that lack online delivery"
+}
+</response>
+</example>
+<example>
+<question>In our key localities (e.g., Satellite, Vastrapur), are there cuisines that are underrepresented — like Bengali or Momos — where we can introduce our specialty?</question>
+<response>
+{
+  "data_related": 1,
+  "relevant_columns": ["Locality", "Cuisines"],
+  "date_interval": null,
+  "binning_required": 0,
+  "bins": [],
+  "dpd_question": 0,
+  "intent": "find cuisines that have low representation in specified localities to identify expansion opportunities"
+}
+</response>
+</example>
+<example>
+<question>Which areas in Ahmedabad have predominantly premium pricing (₹1000+ for two), where our value-for-money model could stand out?</question>
+<response>
+{
+  "data_related": 1,
+  "relevant_columns": ["City", "Locality", "Average_Cost_for_two", "Price_range"],
+  "date_interval": null,
+  "binning_required": 0,
+  "bins": [],
+  "dpd_question": 0,
+  "intent": "locate localities in Ahmedabad where most restaurants have an average cost for two above ₹1000 or are in the highest price range"
+}
+</response>
+</example>
+<example>
+<question>Are there neighborhoods where a large number of restaurants are rated ‘Excellent’? Should we consider opening our next premium dine-in outlet there?</question>
+<response>
+{
+  "data_related": 1,
+  "relevant_columns": ["City", "Locality", "Aggregate_rating"],
+  "date_interval": null,
+  "binning_required": 0,
+  "bins": [],
+  "dpd_question": 0,
+  "intent": "identify localities in Ahmedabad where most restaurants have an aggregate rating of 'Excellent'"
+}
+</response>
+</example>
+</examples>
+
+

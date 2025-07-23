@@ -1,0 +1,83 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Google Cloud credentials and sensitive files (NEVER commit these!)
+service-account-key.json
+*.json
+!schema_config.json
+!sales_schema_config.json
+!package.json
+!cloudbuild.yaml
+
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+.env.staging
+*.key
+*.pem
+*.p12
+*.pfx
+
+# GCP and other cloud credentials
+gcloud/
+.gcloud/
+.aws/
+.azure/
+
+# uv
+.uv/
+
+# Chainlit
+.chainlit/
+
+# Data files (optional - depends on your preference)
+*.csv
+!sample.csv

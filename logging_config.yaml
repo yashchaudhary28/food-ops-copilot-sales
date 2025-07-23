@@ -1,0 +1,88 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  detailed:
+    format: '%(asctime)s - %(call_id)s - **%(name)s** - %(module)s - %(funcName)s:%(lineno)d - %(levelname)s -  %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  simple:
+    format: '%(asctime)s - **%(name)s** - %(module)s - %(funcName)s:%(lineno)d - %(levelname)s -  %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+
+filters:
+  context_filter:
+    (): logger_util.ContextFilter
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: detailed
+    filters: [context_filter]
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: detailed
+    filters: [context_filter]
+    filename: logs/genai_copilot.log
+    mode: 'a'
+    encoding: utf8
+
+  # Simple handler for external libraries (no call_id needed)
+  external_console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple
+    stream: ext://sys.stdout
+
+  external_file:
+    class: logging.FileHandler
+    level: INFO
+    formatter: simple
+    filename: logs/genai_copilot.log
+    mode: 'a'
+    encoding: utf8
+
+loggers:
+  __main__:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+  
+  server:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+  
+  genai_copilot:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: False
+  
+  # External libraries - use simple handlers without context filter
+  watchfiles:
+    level: INFO
+    handlers: [external_console, external_file]
+    propagate: False
+  
+  chainlit:
+    level: INFO
+    handlers: [external_console, external_file]
+    propagate: False
+  
+  websockets:
+    level: INFO
+    handlers: [external_console, external_file]
+    propagate: False
+  
+  aiohttp:
+    level: INFO
+    handlers: [external_console, external_file]
+    propagate: False
+
+root:
+  level: INFO
+  handlers: [console, file]

@@ -1,0 +1,62 @@
+# Cloud Build configuration for Food-Ops-Bot CI/CD Pipeline
+# Triggers on GitHub commits for auto-deployment
+
+steps:
+  # Step 1: Build Docker image with uv dependency management
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/food-ops-bot-repo/food-ops-bot:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/food-ops-bot-repo/food-ops-bot:latest'
+      - '.'
+    id: 'build-image'
+
+  # Step 2: Push image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/food-ops-bot-repo/food-ops-bot:$COMMIT_SHA'
+    id: 'push-image-sha'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/food-ops-bot-repo/food-ops-bot:latest'
+    id: 'push-image-latest'
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'food-ops-bot'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/food-ops-bot-repo/food-ops-bot:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--service-account=food-ops-bot@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--timeout=3600'
+      - '--port=8080'
+    id: 'deploy-cloud-run'
+
+# Build configuration
+options:
+  # Use high-performance machine for faster builds with uv
+  machineType: 'E2_HIGHCPU_8'
+  # Enable Docker layer caching for faster subsequent builds
+  env:
+    - 'DOCKER_BUILDKIT=1'
+
+# Build timeout (uv makes this much faster)
+timeout: '1200s'
+
+# Substitutions for flexibility
+substitutions:
+  _REGION: 'us-central1'
+  _SERVICE_NAME: 'food-ops-bot'
+  _REPOSITORY: 'food-ops-bot-repo'
