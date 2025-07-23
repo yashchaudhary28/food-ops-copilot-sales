@@ -1,60 +1,86 @@
 <examples>
 <example>
-<question>Are there localities in Ahmedabad like Bodakdev or SG Highway where many restaurants have high ratings but don’t offer online delivery? Can we tap that gap for delivery-only kitchens?</question>
+<question>Which brand has the highest revenue in Delhi and Gurgaon combined in the last month?</question>
 <response>
 {
   "data_related": 1,
-  "relevant_columns": ["Locality", "City", "Aggregate_rating", "Has_Online_delivery"],
-  "date_interval": null,
+  "relevant_columns": ["Brand", "City", "Settle_Total", "Sale_Date"],
+  "date_interval": "2025-06-01 to 2025-06-30",
   "binning_required": 0,
   "bins": [],
-  "dpd_question": 0,
-  "intent": "identify Ahmedabad localities (e.g., Bodakdev, SG Highway) with a concentration of high-rated restaurants that lack online delivery"
+  "payment_question": 0,
+  "intent": "analyze brand performance by total revenue in specific cities (Delhi and Gurgaon) for the last month"
 }
 </response>
 </example>
 <example>
-<question>In our key localities (e.g., Satellite, Vastrapur), are there cuisines that are underrepresented — like Bengali or Momos — where we can introduce our specialty?</question>
+<question>What percentage of our transactions are through online platforms like Zomato and Swiggy versus offline payments?</question>
 <response>
 {
   "data_related": 1,
-  "relevant_columns": ["Locality", "Cuisines"],
+  "relevant_columns": ["Payment_Type", "Payment_Vendor", "Bill_No"],
   "date_interval": null,
   "binning_required": 0,
   "bins": [],
-  "dpd_question": 0,
-  "intent": "find cuisines that have low representation in specified localities to identify expansion opportunities"
+  "payment_question": 1,
+  "intent": "calculate percentage distribution of online platform payments (Zomato, Swiggy) versus offline payment methods"
 }
 </response>
 </example>
 <example>
-<question>Which areas in Ahmedabad have predominantly premium pricing (₹1000+ for two), where our value-for-money model could stand out?</question>
+<question>Show me the top 5 outlets by transaction volume and their average transaction value in June 2025</question>
 <response>
 {
   "data_related": 1,
-  "relevant_columns": ["City", "Locality", "Average_Cost_for_two", "Price_range"],
-  "date_interval": null,
+  "relevant_columns": ["Outlet_Location", "Full_Brand_Location", "Bill_No", "Settle_Total", "Sale_Date"],
+  "date_interval": "2025-06-01 to 2025-06-30",
   "binning_required": 0,
   "bins": [],
-  "dpd_question": 0,
-  "intent": "locate localities in Ahmedabad where most restaurants have an average cost for two above ₹1000 or are in the highest price range"
+  "payment_question": 0,
+  "intent": "rank outlets by number of transactions and calculate their average transaction value for June 2025"
 }
 </response>
 </example>
 <example>
-<question>Are there neighborhoods where a large number of restaurants are rated ‘Excellent’? Should we consider opening our next premium dine-in outlet there?</question>
+<question>How much tax are we paying across different cities? Which city has the highest tax burden?</question>
 <response>
 {
   "data_related": 1,
-  "relevant_columns": ["City", "Locality", "Aggregate_rating"],
+  "relevant_columns": ["City", "CGST_2_5_Percent", "SGST_2_5_Percent", "VAT_6_Percent", "VAT_12_5_Percent", "VAT_18_9_Percent", "VAT_25_Percent", "CESS_2_Percent"],
   "date_interval": null,
   "binning_required": 0,
   "bins": [],
-  "dpd_question": 0,
-  "intent": "identify localities in Ahmedabad where most restaurants have an aggregate rating of 'Excellent'"
+  "payment_question": 0,
+  "intent": "analyze total tax burden across cities by summing all tax components and identify the city with highest tax payments"
+}
+</response>
+</example>
+<example>
+<question>What's the trend of UPI payments versus cash payments over the last 3 months?</question>
+<response>
+{
+  "data_related": 1,
+  "relevant_columns": ["Payment_Type", "Sale_Date", "Bill_No", "Settle_Total"],
+  "date_interval": "2025-04-01 to 2025-06-30",
+  "binning_required": 0,
+  "bins": [],
+  "payment_question": 1,
+  "intent": "analyze monthly trend comparison between UPI and cash payment methods over the last 3 months"
+}
+</response>
+</example>
+<example>
+<question>Which outlet locations have transactions above ₹2000 and how many customers do they typically serve?</question>
+<response>
+{
+  "data_related": 1,
+  "relevant_columns": ["Outlet_Location", "City", "Settle_Total", "Pax"],
+  "date_interval": null,
+  "binning_required": 1,
+  "bins": ["Settle_Total"],
+  "payment_question": 0,
+  "intent": "identify outlets with high-value transactions (above ₹2000) and analyze their typical customer group sizes"
 }
 </response>
 </example>
 </examples>
-
-
